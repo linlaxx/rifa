@@ -4,5 +4,5 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
-    //askdnmlasmdl,asñdañsd,as
+    //askdnmlasmdl,asñdañsd,asasdddddddddddddddsadasr
 }
