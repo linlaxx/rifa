@@ -4,5 +4,5 @@ namespace App\Http\Controllers;
 
 abstract class Controller
 {
-    //puto
+    //joto y culon
 }
