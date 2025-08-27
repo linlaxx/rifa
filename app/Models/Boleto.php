@@ -18,3 +18,4 @@ class Boleto extends Model
         return $this->belongsTo(Rifa::class);
     }
 }
+//Cambio de prueba para git
