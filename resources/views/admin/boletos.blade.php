@@ -10,37 +10,54 @@
         <span class="badge bg-danger">Vendidos: {{ $vendidos }}</span>
     </div>
 
-    <div class="d-flex flex-wrap gap-2">
-        @foreach($rifa->boletos as $boleto)
-            <button 
-                class="btn btn-sm toggle-boleto {{ $boleto->vendido ? 'btn-danger' : 'btn-success' }}"
-                data-id="{{ $boleto->id }}">
-                {{ $boleto->numero }}
-            </button>
-        @endforeach
+    <input type="number" id="buscarBoleto" class="form-control mb-3" placeholder="Buscar boletos por número">
+
+    <div id="listado-boletos">
+        @include('admin.partials.boletos-list', ['boletos' => $boletos])
     </div>
 </div>
 
 <script>
-document.querySelectorAll('.toggle-boleto').forEach(btn => {
-    btn.addEventListener('click', function() {
-        const id = this.dataset.id;
-        fetch(`/admin/boletos/${id}/toggle`, {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if(data.success){
-                // Cambiar color del botón
-                this.classList.toggle('btn-success', !data.vendido);
-                this.classList.toggle('btn-danger', data.vendido);
-            }
+function activarToggleBoleto() {
+    document.querySelectorAll('.toggle-boleto').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const url = "{{ route('admin.toggleBoleto', ':id') }}".replace(':id', id);
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(res => res.json())
+            .then(data => {
+                if(data.success){
+                    this.classList.toggle('btn-success', !data.vendido);
+                    this.classList.toggle('btn-danger', data.vendido);
+                }
+            });
         });
     });
+}
+
+// Activar toggles al cargar la página
+activarToggleBoleto();
+
+// Búsqueda en tiempo real
+document.getElementById('buscarBoleto').addEventListener('keyup', function() {
+    const q = this.value;
+    const rifaId = '{{ $rifa->id }}';
+    
+    fetch(`/admin/rifas/${rifaId}/boletos/search?q=${q}`)
+        .then(res => res.text())
+        .then(html => {
+            document.getElementById('listado-boletos').innerHTML = html;
+            // Reaplicar eventos a los botones nuevos
+            activarToggleBoleto();
+        });
 });
 </script>
+
 @endsection

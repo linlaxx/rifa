@@ -40,6 +40,8 @@ Route::delete('/admin/rifas/{id}', [AdminController::class, 'destroy'])->name('a
 // Vista de boletos de una rifa
 Route::get('/admin/rifas/{rifaId}/boletos', [AdminController::class, 'boletos'])->name('admin.boletos');
 
+// Búsqueda AJAX de boletos
+Route::get('/admin/rifas/{rifaId}/boletos/search', [AdminController::class, 'buscarBoletos'])->name('admin.buscarBoletos');
 
 // Cambiar estado de un boleto (vendido/no vendido)
 Route::post('/admin/boletos/{boletoId}/toggle', [AdminController::class, 'toggleBoleto'])->name('admin.toggleBoleto');

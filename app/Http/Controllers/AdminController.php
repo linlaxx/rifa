@@ -168,17 +168,39 @@ public function destroy($id)
     }
 
 
-    // Mostrar los boletos de una rifa
+// Mostrar vista de boletos con paginación
 public function boletos($rifaId)
 {
-    $rifa = Rifa::with('boletos')->findOrFail($rifaId);
+    $rifa = Rifa::findOrFail($rifaId);
 
-    $total = $rifa->boletos->count();
-    $vendidos = $rifa->boletos->where('vendido', true)->count();
+    $boletos = $rifa->boletos()
+        ->orderBy('numero')
+        ->paginate(500);
+
+    $total = $rifa->boletos()->count();
+    $vendidos = $rifa->boletos()->where('vendido', true)->count();
     $disponibles = $total - $vendidos;
 
-    return view('admin.boletos', compact('rifa', 'total', 'vendidos', 'disponibles'));
+    return view('admin.boletos', compact('rifa', 'boletos', 'total', 'vendidos', 'disponibles'));
 }
+
+// AJAX: Buscar boletos por número (startswith)
+public function buscarBoletos(Request $request, $rifaId)
+{
+    $rifa = Rifa::findOrFail($rifaId);
+
+    $busqueda = $request->query('q');
+
+    $boletos = $rifa->boletos()
+        ->when($busqueda, function($query) use ($busqueda) {
+            $query->where('numero', 'like', $busqueda.'%');
+        })
+        ->orderBy('numero')
+        ->paginate(500);
+
+    return view('admin.partials.boletos-list', compact('boletos'))->render();
+}
+
 // Cambiar estado de un boleto
 public function toggleBoleto(Request $request, $boletoId)
 {
