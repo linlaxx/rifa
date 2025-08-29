@@ -23,6 +23,10 @@ Route::get('/admin', [AdminController::class, 'index'])->middleware(['auth', 've
 Route::get('/admin/crearSorteo', [AdminController::class, 'crear'])->name('admin.crearSorteo');
 Route::post('/admin/crearSorteo', [AdminController::class, 'store'])->name('admin.store');
 Route::get('/admin/listado', [AdminController::class, 'listado'])->name('admin.listado');
+Route::get('/admin/crear', [AdminController::class, 'crear'])->name('admin.crear');
+Route::get('/admin/{id}/edit', [AdminController::class, 'edit'])->name('admin.edit');
+Route::delete('/admin/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
+
 
 
 require __DIR__.'/auth.php';

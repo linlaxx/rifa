@@ -65,10 +65,18 @@ class AdminController extends Controller
 
 
     // Listado de rifas
-    public function listado()
+ public function listado()
+{
+    $rifas = Rifa::paginate(10); // 10 rifas por página
+    return view('admin.listado', compact('rifas'));
+}
+
+public function destroy($id)
     {
-        $rifas = Rifa::all();
-        return view('admin.listado', compact('rifas'));
+        $rifa = Rifa::findOrFail($id);
+        $rifa->delete();
+
+        return redirect()->route('admin.listado')->with('success', 'Rifa eliminada correctamente.');
     }
 
     // Vista principal del admin
