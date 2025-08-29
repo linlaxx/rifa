@@ -49,9 +49,11 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex flex-wrap justify-content-center gap-1">
-                                            <a href="{{ route('admin.VistaBoletos', $rifa->id) }}" class="btn btn-info btn-sm" title="Ver/Marcar boletos">
+                                           <a href="{{ route('admin.boletos', $rifa->id) }}" class="btn btn-info btn-sm" title="Ver/Marcar boletos">
     <i class="bi bi-ticket-fill"></i>
 </a>
+
+
 
                                             <a href="{{ route('admin.editar', $rifa->id) }}" class="btn btn-warning btn-sm">
                                                 <i class="bi bi-pencil-square"></i>

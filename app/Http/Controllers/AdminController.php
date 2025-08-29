@@ -26,7 +26,7 @@ class AdminController extends Controller
     }
 
 
-    // Vista del formulario
+    // Vista del formulario para crear rifa
     public function vista()
     {
         return view('admin.crearSorteo');
@@ -86,6 +86,8 @@ $rifa->save();
 
     return redirect()->route('admin.listado')->with('success', 'Rifa creada correctamente.');
 }
+
+
 // Mostrar formulario de editar
 public function VistaEditar($id)
 {
@@ -165,11 +167,31 @@ public function destroy($id)
         return redirect()->route('admin.listado')->with('success', 'Rifa eliminada correctamente.');
     }
 
-    // Vista de boletos
-    public function vistaBoletos()
-    {
-        return view('admin.boletos');
-    }
+
+    // Mostrar los boletos de una rifa
+public function boletos($rifaId)
+{
+    $rifa = Rifa::with('boletos')->findOrFail($rifaId);
+
+    $total = $rifa->boletos->count();
+    $vendidos = $rifa->boletos->where('vendido', true)->count();
+    $disponibles = $total - $vendidos;
+
+    return view('admin.boletos', compact('rifa', 'total', 'vendidos', 'disponibles'));
+}
+// Cambiar estado de un boleto
+public function toggleBoleto(Request $request, $boletoId)
+{
+    $boleto = Boleto::findOrFail($boletoId);
+    $boleto->vendido = !$boleto->vendido;
+    $boleto->save();
+
+    return response()->json([
+        'success' => true,
+        'vendido' => $boleto->vendido
+    ]);
+}
+
 
  
 }
