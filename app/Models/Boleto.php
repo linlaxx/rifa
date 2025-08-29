@@ -10,7 +10,11 @@ class Boleto extends Model
     use HasFactory;
 
     protected $fillable = [
-        'rifa_id', 'numero', 'disponible'
+        'rifa_id', 'numero', 'disponible', 'vendido'
+    ];
+
+     protected $casts = [
+        'vendido' => 'boolean',
     ];
 
     public function rifa()
@@ -18,4 +22,3 @@ class Boleto extends Model
         return $this->belongsTo(Rifa::class);
     }
 }
-//Cambio de prueba para git

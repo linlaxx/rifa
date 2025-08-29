@@ -5,7 +5,7 @@
     <div class="card shadow-lg rounded">
         <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center flex-wrap">
             <h2 class="mb-0 fs-6">📋 Listado de Rifas</h2>
-            <a href="{{ route('admin.crear') }}" class="btn btn-light btn-sm mt-2 mt-md-0">
+            <a href="{{ route('admin.crearSorteo') }}" class="btn btn-light btn-sm mt-2 mt-md-0">
                 <i class="bi bi-plus-circle"></i> Nueva Rifa
             </a>
         </div>
@@ -39,7 +39,7 @@
                                     <td class="text-center">{{ $rifa->id }}</td>
                                     <td>{{ $rifa->nombre }}</td>
                                     <td class="text-success fw-bold d-none d-sm-table-cell">${{ number_format($rifa->precio_boleto, 2) }}</td>
-                                    <td class="d-none d-md-table-cell">{{ $rifa->total_boletos }}</td>
+                                    <td class="d-none d-md-table-cell">{{ $rifa->boletos_count }}</td>
                                     <td class="text-center">
                                         @if($rifa->estado == 'activa')
                                             <span class="badge bg-success">Activa</span>
@@ -49,7 +49,11 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="d-flex flex-wrap justify-content-center gap-1">
-                                            <a href="{{ route('admin.edit', $rifa->id) }}" class="btn btn-warning btn-sm">
+                                            <a href="{{ route('admin.VistaBoletos', $rifa->id) }}" class="btn btn-info btn-sm" title="Ver/Marcar boletos">
+    <i class="bi bi-ticket-fill"></i>
+</a>
+
+                                            <a href="{{ route('admin.editar', $rifa->id) }}" class="btn btn-warning btn-sm">
                                                 <i class="bi bi-pencil-square"></i>
                                             </a>
 
