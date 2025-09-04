@@ -47,4 +47,17 @@ Route::get('/admin/rifas/{rifaId}/boletos/search', [AdminController::class, 'bus
 Route::post('/admin/boletos/{boletoId}/toggle', [AdminController::class, 'toggleBoleto'])->name('admin.toggleBoleto');
 
 
+//RUTAS PARA EL USUARIO NORMAL
+use App\Http\Controllers\PublicController;
+
+// Página principal (con carrusel y secciones)
+Route::get('/', [PublicController::class, 'index'])->name('public.index');
+
+// Vista individual de una rifa
+Route::get('/rifa/{id}', [PublicController::class, 'showRifa'])->name('public.rifa');
+
+// Vista métodos de pago
+Route::get('/metodos-pago', [PublicController::class, 'metodosPago'])->name('public.metodosPago');
+
+
 require __DIR__.'/auth.php';
