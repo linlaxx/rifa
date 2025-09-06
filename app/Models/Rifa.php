@@ -10,7 +10,17 @@ class Rifa extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nombre', 'descripcion', 'fotos', 'precio_boleto', 'total_boletos', 'estado'
+        'nombre', 
+        'descripcion', 
+        'fotos', 
+        'precio_boleto', 
+        'total_boletos', 
+        'estado'
+    ];
+
+    // 👇 Aquí agregamos el cast para fotos
+    protected $casts = [
+        'fotos' => 'array',
     ];
 
     public function boletos()

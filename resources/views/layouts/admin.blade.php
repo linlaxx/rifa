@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 
     <style>
-        /* Fondo con overlay oscuro */
         body {
             position: relative;
             min-height: 100vh;
@@ -25,13 +24,12 @@
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.5); /* overlay negro semi-transparente */
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 0;
         }
 
-        /* Navbar */
         .navbar {
-            z-index: 1; /* que quede encima del overlay */
+            z-index: 1;
         }
 
         .navbar-brand {
@@ -51,18 +49,16 @@
             color: #ffc107;
         }
 
-        /* Contenido principal */
         .content-wrapper {
             position: relative;
-            z-index: 1; /* que quede encima del overlay */
-            background: rgba(255, 255, 255, 0.95); /* fondo blanco semitransparente */
+            z-index: 1;
+            background: rgba(255, 255, 255, 0.95);
             border-radius: 12px;
             padding: 30px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.3);
             margin-bottom: 50px;
         }
 
-        /* Logo en navbar */
         .navbar-logo {
             width: 30px;
             height: 30px;
@@ -83,11 +79,9 @@
     </style>
 </head>
 <body>
-
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm mb-4">
         <div class="container-fluid">
-            <!-- Botón de Inicio con logo -->
             <a class="navbar-brand d-flex align-items-center" href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('assets/logo.png') }}" alt="Logo" class="navbar-logo">
                 Inicio
@@ -96,7 +90,6 @@
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <!-- Links de navegación -->
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
