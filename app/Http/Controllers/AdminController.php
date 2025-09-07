@@ -9,49 +9,44 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
-    // Listado de rifas
+    // 📌 Listado de rifas
     public function listado()
     {
         $rifas = Rifa::withCount('boletos')->paginate(10);
         return view('admin.listado', compact('rifas'));
     }
 
-    // Vista principal del admin
-public function index()
-{
-    $rifasActivas = Rifa::where('estado', 'activa')->count();
-    $rifasFinalizadas = Rifa::where('estado', 'finalizada')->count();
-    $boletosVendidos = \DB::table('boletos')->where('vendido', true)->count();
+    // 📌 Dashboard principal del admin
+    public function index()
+    {
+        $rifasActivas = Rifa::where('estado', 'activa')->count();
+        $rifasFinalizadas = Rifa::where('estado', 'finalizada')->count();
+        $boletosVendidos = \DB::table('boletos')->where('vendido', true)->count();
 
-    // Datos para gráfico
-    $rifas = Rifa::withCount([
-    'boletos as vendidos' => function($q) {
-        $q->where('vendido', 1);
-    },
-    'boletos as disponibles' => function($q) {
-        $q->where('vendido', 0);
+        $rifas = Rifa::withCount([
+            'boletos as vendidos' => function($q) {
+                $q->where('vendido', 1);
+            },
+            'boletos as disponibles' => function($q) {
+                $q->where('vendido', 0);
+            }
+        ])->get();
+
+        return view('admin.dashboard', compact(
+            'rifasActivas', 
+            'rifasFinalizadas', 
+            'boletosVendidos',
+            'rifas'
+        ));
     }
-])->get();
 
-
-    return view('admin.dashboard', compact(
-        'rifasActivas', 
-        'rifasFinalizadas', 
-        'boletosVendidos',
-        'rifas'
-    ));
-}
-
-
-
-
-    // Vista del formulario para crear rifa
+    // 📌 Formulario de creación
     public function vista()
     {
         return view('admin.crearSorteo');
     }
 
-    // Guardar la rifa y los boletos
+    // 📌 Guardar rifa
     public function guardar(Request $request)
     {
         $request->validate([
@@ -73,7 +68,7 @@ public function index()
         $rifa = Rifa::create([
             'nombre' => $request->nombre,
             'descripcion' => $request->descripcion,
-            'fotos' => json_encode($paths),
+            'fotos' => json_encode($paths), // 👈 Siempre guardamos JSON
             'precio_boleto' => $request->precio_boleto,
             'total_boletos' => $request->total_boletos,
             'estado' => 'activa'
@@ -87,6 +82,7 @@ public function index()
                 'rifa_id' => $rifa->id,
                 'numero' => $i,
                 'disponible' => true,
+                'vendido' => false,
                 'created_at' => $ahora,
                 'updated_at' => $ahora
             ];
@@ -99,20 +95,17 @@ public function index()
             \DB::table('boletos')->insert($boletos);
         }
 
-        $rifa->total_boletos = $rifa->boletos()->count();
-        $rifa->save();
-
         return redirect()->route('admin.listado')->with('success', 'Rifa creada correctamente.');
     }
 
-    // Mostrar formulario de editar
+    // 📌 Vista de edición
     public function VistaEditar($id)
     {
         $rifa = Rifa::findOrFail($id);
         return view('admin.editar', compact('rifa'));
     }
 
-    // Editar rifa
+    // 📌 Editar rifa
     public function editar(Request $request, $id)
     {
         $rifa = Rifa::findOrFail($id);
@@ -132,38 +125,41 @@ public function index()
         $rifa->precio_boleto = $request->precio_boleto;
         $rifa->estado = $request->estado;
 
-        // Manejo de fotos
-        if ($request->hasFile('fotos')) {
-            // eliminar fotos anteriores si existen
-            if ($rifa->fotos) {
-                foreach (json_decode($rifa->fotos, true) as $oldFoto) {
-                    Storage::disk('public')->delete($oldFoto);
+        // 📌 Manejo de fotos (siempre JSON → array)
+        $fotosActuales = is_array($rifa->fotos) ? $rifa->fotos : json_decode($rifa->fotos, true) ?? [];
+
+        // Eliminar fotos seleccionadas
+        if ($request->filled('remove_fotos')) {
+            $aEliminar = explode(',', $request->remove_fotos);
+            foreach ($aEliminar as $foto) {
+                if (in_array($foto, $fotosActuales)) {
+                    Storage::disk('public')->delete($foto);
+                    $fotosActuales = array_diff($fotosActuales, [$foto]);
                 }
             }
-
-            $paths = [];
-            foreach ($request->file('fotos') as $foto) {
-                $paths[] = $foto->store('rifas', 'public');
-            }
-            $rifa->fotos = json_encode($paths);
         }
 
+        // Subir nuevas fotos
+        if ($request->hasFile('fotos')) {
+            foreach ($request->file('fotos') as $foto) {
+                $fotosActuales[] = $foto->store('rifas', 'public');
+            }
+        }
+
+        // Máximo 3 y guardamos como JSON
+        $rifa->fotos = json_encode(array_slice($fotosActuales, 0, 3));
         $rifa->save();
 
-        // Ajustar boletos
+        // 📌 Ajustar boletos
         $totalActual = $rifa->boletos()->count();
         $nuevoTotal = $request->total_boletos;
 
         if ($nuevoTotal < $totalActual) {
-            $boletosAEliminar = $rifa->boletos()
+            $rifa->boletos()
                 ->where('vendido', false)
                 ->orderByDesc('id')
                 ->take($totalActual - $nuevoTotal)
-                ->get();
-
-            foreach ($boletosAEliminar as $boleto) {
-                $boleto->delete();
-            }
+                ->delete();
         } elseif ($nuevoTotal > $totalActual) {
             $faltan = $nuevoTotal - $totalActual;
             for ($i = 1; $i <= $faltan; $i++) {
@@ -179,14 +175,15 @@ public function index()
         return redirect()->route('admin.listado')->with('success', 'Rifa actualizada correctamente');
     }
 
-    // Eliminar rifa y sus boletos
+    // 📌 Eliminar rifa
     public function destroy($id)
     {
         $rifa = Rifa::findOrFail($id);
 
         if ($rifa->fotos) {
-            foreach (json_decode($rifa->fotos, true) as $oldFoto) {
-                Storage::disk('public')->delete($oldFoto);
+            $fotos = is_array($rifa->fotos) ? $rifa->fotos : json_decode($rifa->fotos, true);
+            foreach ($fotos as $foto) {
+                Storage::disk('public')->delete($foto);
             }
         }
 
@@ -194,7 +191,7 @@ public function index()
         return redirect()->route('admin.listado')->with('success', 'Rifa eliminada correctamente.');
     }
 
-    // Mostrar boletos
+    // 📌 Mostrar boletos
     public function boletos($rifaId)
     {
         $rifa = Rifa::findOrFail($rifaId);
@@ -210,7 +207,7 @@ public function index()
         return view('admin.boletos', compact('rifa', 'boletos', 'total', 'vendidos', 'disponibles'));
     }
 
-    // Buscar boletos por número
+    // 📌 Buscar boletos
     public function buscarBoletos(Request $request, $rifaId)
     {
         $rifa = Rifa::findOrFail($rifaId);
@@ -227,7 +224,7 @@ public function index()
         return view('admin.partials.boletos-list', compact('boletos'))->render();
     }
 
-    // Cambiar estado de un boleto
+    // 📌 Cambiar estado de un boleto
     public function toggleBoleto(Request $request, $boletoId)
     {
         $boleto = Boleto::findOrFail($boletoId);

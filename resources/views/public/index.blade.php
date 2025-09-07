@@ -1,55 +1,103 @@
 @extends('layouts.public')
 
-@section('title', 'Inicio')
+@section('title', 'Rifas Activas')
 
 @section('content')
-<div id="rifasCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
-    <div class="carousel-inner">
-        @forelse($rifas as $index => $rifa)
-            <div class="carousel-item @if($index == 0) active @endif text-center">
-                <a href="{{ route('public.rifa', $rifa->id) }}">
-                    <img src="{{ $rifa->fotos 
-                                    ? asset('storage/rifas/' . $rifa->fotos) 
-                                    : asset('images/default_rifa.png') }}" 
-                         class="d-block mx-auto shadow-lg"
-                         style="max-width: 400px; max-height: 600px; width: 100%; height: auto; object-fit: cover; border-radius: 15px;" 
-                         alt="{{ $rifa->nombre }}">
-                    <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 rounded p-3 shadow mt-3">
-                        <h5 class="fw-bold">{{ $rifa->nombre }}</h5>
-                        <p class="mb-0 text-warning">Precio del boleto: ${{ number_format($rifa->precio_boleto, 2) }}</p>
-                    </div>
-                </a>
-            </div>
-        @empty
-            <div class="carousel-item active text-center">
-                <img src="{{ asset('images/default_rifa.png') }}" 
-                     class="d-block mx-auto shadow-lg"
-                     style="max-width: 400px; max-height: 600px; width: 100%; height: auto; object-fit: cover; border-radius: 15px;" 
-                     alt="Sin rifas disponibles">
-                <div class="carousel-caption d-none d-md-block bg-dark bg-opacity-75 rounded p-3 shadow mt-3">
-                    <h5>No hay rifas activas</h5>
-                    <p class="mb-0">Vuelve pronto para ver nuevas rifas</p>
-                </div>
-            </div>
-        @endforelse
-    </div>
 
-    {{-- Controles --}}
-    <button class="carousel-control-prev" type="button" data-bs-target="#rifasCarousel" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true" style="background-color: black; border-radius: 50%;"></span>
-        <span class="visually-hidden">Anterior</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#rifasCarousel" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true" style="background-color: black; border-radius: 50%;"></span>
-        <span class="visually-hidden">Siguiente</span>
-    </button>
-</div>
-
-{{-- Preguntas frecuentes --}}
-<section id="preguntas-frecuentes" class="bg-light py-5">
+{{-- 🎟️ Carrusel de Rifas Activas --}}
+<section class="py-5 bg-light">
     <div class="container">
-        <h2 class="text-center mb-4">Preguntas Frecuentes</h2>
-        <div class="accordion" id="faqAccordion">
+        <h2 class="text-center fw-bold mb-5 text-dark display-6">🎟️ Rifas Activas</h2>
+
+        @if($rifas->count() > 0)
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    @foreach($rifas as $rifa)
+                        @php
+                            $imagenes = is_array($rifa->fotos) ? $rifa->fotos : json_decode($rifa->fotos, true);
+                            $imagenPrincipal = $imagenes[0] ?? null;
+
+                            $total = $rifa->total_boletos;
+                            $vendidos = $rifa->vendidos;
+                            $porcentaje = $total > 0 ? round(($vendidos / $total) * 100, 2) : 0;
+
+                            if ($porcentaje < 50) {
+                                $color = 'linear-gradient(90deg, #28a745, #20c997)';
+                            } elseif ($porcentaje < 80) {
+                                $color = 'linear-gradient(90deg, #ffc107, #fd7e14)';
+                            } else {
+                                $color = 'linear-gradient(90deg, #dc3545, #b21f2d)';
+                            }
+                        @endphp
+
+                        <div class="swiper-slide">
+                            <div class="card h-100 shadow-lg border-0 rounded-4 overflow-hidden position-relative rifa-card">
+                                <img src="{{ $imagenPrincipal ? asset('storage/' . $imagenPrincipal) : asset('images/default_rifa.png') }}" 
+                                     class="card-img-top" 
+                                     style="height: 230px; object-fit: cover;" 
+                                     alt="{{ $rifa->nombre }}">
+
+                                <div class="card-body d-flex flex-column p-4">
+                                    <h5 class="card-title fw-bold text-dark">{{ $rifa->nombre }}</h5>
+                                    <p class="card-text text-muted small">{{ Str::limit($rifa->descripcion, 90) }}</p>
+
+                                    {{-- 📊 Barra de progreso --}}
+                                    <div class="mb-3">
+                                        <div class="d-flex justify-content-between small mb-1 fw-semibold text-secondary">
+                                            <span>🎟️ Vendidos: {{ $vendidos }}</span>
+                                            <span>Total: {{ $total }}</span>
+                                        </div>
+
+                                        <div class="progress" style="height: 22px; border-radius: 12px; background: #f1f3f5;">
+                                            <div class="progress-bar fw-bold text-white position-relative" 
+                                                 role="progressbar" 
+                                                 style="
+                                                    width: {{ $porcentaje }}%; 
+                                                    border-radius: 12px; 
+                                                    background: {{ $color }};
+                                                    transition: width 1.5s ease-in-out;
+                                                 " 
+                                                 aria-valuenow="{{ $porcentaje }}" 
+                                                 aria-valuemin="0" 
+                                                 aria-valuemax="100">
+
+                                                <span class="position-absolute top-50 start-50 translate-middle small fw-bold">
+                                                    {{ $porcentaje }}%
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <p class="fw-bold text-success mb-3 fs-5">
+                                        🎫 ${{ number_format($rifa->precio_boleto, 2) }}
+                                    </p>
+
+                                    <a href="{{ route('public.rifa', $rifa->id) }}" 
+                                       class="btn btn-warning w-100 mt-auto fw-bold rounded-pill shadow-sm">
+                                        Participar
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Controles de Swiper --}}
+                <div class="swiper-pagination mt-4"></div>
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        @else
+            <p class="text-center text-muted">⚠️ No hay rifas disponibles en este momento.</p>
+        @endif
+    </div>
+</section>
+
+{{-- ❓ Preguntas Frecuentes --}}
+<section id="preguntas-frecuentes" class="bg-white py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-4">❓ Preguntas Frecuentes</h2>
+        <div class="accordion shadow-sm" id="faqAccordion">
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
@@ -58,7 +106,7 @@
                 </h2>
                 <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Puedes comprar tus boletos en línea mediante nuestra plataforma segura.
+                        Puedes comprar tus boletos en línea mediante nuestra plataforma segura y rápida.
                     </div>
                 </div>
             </div>
@@ -70,7 +118,7 @@
                 </h2>
                 <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                     <div class="accordion-body">
-                        Cada rifa tiene su fecha específica indicada en la descripción.
+                        Cada rifa tiene su fecha específica, revisa la descripción para más detalles.
                     </div>
                 </div>
             </div>
@@ -78,24 +126,108 @@
     </div>
 </section>
 
-{{-- Contacto --}}
-<section id="contacto" class="py-5 bg-dark text-white">
+{{-- 📌 Footer --}}
+<footer class="py-4 bg-dark text-white text-center">
     <div class="container">
-        <h2 class="text-center mb-4">Contacto</h2>
-        <form class="row g-3 mx-auto" style="max-width: 700px;">
-            <div class="col-md-6">
-                <input type="text" class="form-control" placeholder="Tu nombre" required>
-            </div>
-            <div class="col-md-6">
-                <input type="email" class="form-control" placeholder="Tu correo" required>
-            </div>
-            <div class="col-12">
-                <textarea class="form-control" rows="4" placeholder="Tu mensaje..." required></textarea>
-            </div>
-            <div class="col-12 text-center">
-                <button type="submit" class="btn btn-warning px-4">Enviar</button>
-            </div>
-        </form>
+        <p class="mb-0">© {{ date('Y') }} @Software | Páginas del Pacífico</p>
     </div>
-</section>
+</footer>
+
+{{-- 🌐 Botón Flotante de WhatsApp con Logo --}}
+<a href="https://wa.me/521234567890?text=Hola!%20Quiero%20información%20sobre%20las%20rifas" 
+   class="btn-whatsapp" target="_blank">
+   <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+        alt="WhatsApp" width="40" height="40">
+</a>
+
+{{-- Swiper.js --}}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.css"/>
+<script src="https://cdn.jsdelivr.net/npm/swiper@9/swiper-bundle.min.js"></script>
+<script>
+    var swiper = new Swiper(".mySwiper", {
+        effect: "coverflow",
+        grabCursor: true,
+        centeredSlides: true,
+        loop: true,
+        autoplay: {
+            delay: 3500,
+            disableOnInteraction: false,
+        },
+        slidesPerView: "auto",
+        coverflowEffect: {
+            rotate: 30,
+            stretch: 0,
+            depth: 150,
+            modifier: 1,
+            slideShadows: true,
+        },
+        pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+            dynamicBullets: true,
+        },
+        navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+        },
+        breakpoints: {
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
+        },
+    });
+</script>
+
+{{-- 🎨 Extra CSS para mejorar diseño --}}
+<style>
+    .rifa-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .rifa-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    .swiper-button-next, .swiper-button-prev {
+        color: #ffc107;
+        transition: 0.3s;
+    }
+    .swiper-button-next:hover, .swiper-button-prev:hover {
+        color: #ff9800;
+    }
+    .swiper-pagination-bullet {
+        background: #ffc107;
+        opacity: 0.7;
+    }
+    .swiper-pagination-bullet-active {
+        background: #ff9800;
+        opacity: 1;
+    }
+
+    /* 🎯 Estilo del botón flotante */
+    .btn-whatsapp {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background-color: #25d366;
+        border-radius: 50%;
+        width: 65px;
+        height: 65px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-decoration: none;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        z-index: 1000;
+        transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .btn-whatsapp:hover {
+        transform: scale(1.1);
+        background-color: #20b954;
+    }
+    .btn-whatsapp img {
+        width: 35px;
+        height: 35px;
+    }
+</style>
+
 @endsection

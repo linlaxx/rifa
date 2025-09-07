@@ -19,7 +19,7 @@ class Rifa extends Model
     ];
 
     // 👇 Aquí agregamos el cast para fotos
-    protected $casts = [
+   protected $casts = [
         'fotos' => 'array',
     ];
 
