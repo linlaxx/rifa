@@ -14,7 +14,7 @@ return new class extends Migration
     Schema::create('boletos', function (Blueprint $table) {
         $table->id();
         $table->foreignId('rifa_id')->constrained('rifas')->onDelete('cascade');
-        $table->integer('numero');
+        $table->string('numero');
         $table->boolean('disponible')->default(true);
         $table->timestamps();
     });

@@ -77,15 +77,19 @@ class AdminController extends Controller
         // Generar boletos
         $boletos = [];
         $ahora = now();
-        for ($i = 1; $i <= $rifa->total_boletos; $i++) {
-            $boletos[] = [
-                'rifa_id' => $rifa->id,
-                'numero' => $i,
-                'disponible' => true,
-                'vendido' => false,
-                'created_at' => $ahora,
-                'updated_at' => $ahora
-            ];
+        // 👇 Calculamos el largo máximo según el total
+$longitud = strlen((string)$rifa->total_boletos);
+
+for ($i = 1; $i <= $rifa->total_boletos; $i++) {
+    $boletos[] = [
+        'rifa_id' => $rifa->id,
+        'numero' => str_pad($i, $longitud, '0', STR_PAD_LEFT), // 👈 Aquí formateamos
+        'disponible' => true,
+        'vendido' => false,
+        'created_at' => $ahora,
+        'updated_at' => $ahora
+    ];
+
             if (count($boletos) >= 5000) {
                 \DB::table('boletos')->insert($boletos);
                 $boletos = [];
@@ -162,14 +166,17 @@ class AdminController extends Controller
                 ->delete();
         } elseif ($nuevoTotal > $totalActual) {
             $faltan = $nuevoTotal - $totalActual;
-            for ($i = 1; $i <= $faltan; $i++) {
-                Boleto::create([
-                    'rifa_id' => $rifa->id,
-                    'numero' => $totalActual + $i,
-                    'disponible' => true,
-                    'vendido' => false,
-                ]);
-            }
+           $longitud = strlen((string)$nuevoTotal);
+
+for ($i = 1; $i <= $faltan; $i++) {
+    Boleto::create([
+        'rifa_id' => $rifa->id,
+        'numero' => str_pad($totalActual + $i, $longitud, '0', STR_PAD_LEFT),
+        'disponible' => true,
+        'vendido' => false,
+    ]);
+}
+
         }
 
         return redirect()->route('admin.listado')->with('success', 'Rifa actualizada correctamente');
