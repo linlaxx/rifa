@@ -48,7 +48,7 @@ public function reservar(Request $request)
             'apellido' => $request->apellido,
             'telefono' => $request->telefono,
             'estado' => $request->estado,
-            'expira_en' => now()->addHours(12),
+            'expira_en' => now()->addHours(24),
         ]);
 
         $boleto->disponible = 0;
