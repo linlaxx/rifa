@@ -17,6 +17,12 @@ class Boleto extends Model
         'vendido' => 'boolean',
     ];
 
+    public function reserva()
+{
+    return $this->hasOne(Reserva::class);
+}
+
+
     public function rifa()
     {
         return $this->belongsTo(Rifa::class);

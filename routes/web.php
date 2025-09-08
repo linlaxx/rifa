@@ -18,6 +18,9 @@ Route::get('/rifa/{id}', [PublicController::class, 'showRifa'])->name('public.ri
 // Vista métodos de pago
 Route::get('/metodos-pago', [PublicController::class, 'metodosPago'])->name('public.metodosPago');
 
+// Procesar la reserva de boletos
+Route::post('/rifa/reservar', [PublicController::class, 'reservar'])->name('rifa.reservar');
+
 
 // ====================
 // RUTAS DE ADMIN
