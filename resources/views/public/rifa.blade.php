@@ -269,23 +269,23 @@ document.addEventListener("DOMContentLoaded", () => {
             })
         })
         .then(res => res.json())
-        .then(data => {
-            if(data.success){
-                alert("Boletos reservados correctamente!");
-                // Abrir WhatsApp
-                const mensaje = `Hola, quiero comprar los siguientes boletos de la rifa "{{ $rifa->nombre }}":\n\n` +
-                                `🎟️ Números: ${seleccionados.join(", ")}\n` +
-                                `💰 Precio por boleto: $${precioBoleto.toFixed(2)}\n` +
-                                `📊 Total: $${(precioBoleto * seleccionados.length).toFixed(2)}\n\n` +
-                                `📝 Datos:\nNombre: ${nombre}\nApellido: ${apellido}\nTeléfono: ${telefono}\nEstado: ${estado}`;
-                const numeroWhatsApp = "521234567890"; // Cambia por tu número
-                const url = `https://wa.me/${numeroWhatsApp}?text=${encodeURIComponent(mensaje)}`;
-                window.open(url, "_blank");
-                location.reload();
-            } else {
-                alert(data.message || "Error al reservar.");
-            }
-        })
+     .then(data => {
+    if(data.success){
+        alert("Boletos reservados correctamente!");
+        const mensaje = `Hola, quiero comprar los siguientes boletos de la rifa "{{ $rifa->nombre }}":\n\n` +
+                        `🎟️ Números: ${seleccionados.join(", ")}\n` +
+                        `💰 Precio por boleto: $${precioBoleto.toFixed(2)}\n` +
+                        `📊 Total: $${(precioBoleto * seleccionados.length).toFixed(2)}\n\n` +
+                        `📝 Datos:\nNombre: ${nombre}\nApellido: ${apellido}\nTeléfono: ${telefono}\nEstado: ${estado}`;
+
+        const url = `https://wa.me/${data.numero}?text=${encodeURIComponent(mensaje)}`;
+        window.open(url, "_blank");
+        location.reload();
+    } else {
+        alert(data.message || "Error al reservar.");
+    }
+})
+
         .catch(err => {
             console.error(err);
             alert("Error al comunicarse con el servidor.");

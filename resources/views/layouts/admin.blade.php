@@ -102,6 +102,11 @@
                             <i class="bi bi-card-list me-1"></i> Listado
                         </a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.numeros.index') }}">
+                            <i class="bi bi-telephone me-1"></i> Números de celular
+                        </a>
+                    </li>
                 </ul>
             </div>
         </div>

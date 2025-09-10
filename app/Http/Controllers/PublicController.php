@@ -7,6 +7,7 @@ use App\Models\Reserva;
 use App\Models\Boleto;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Numero; 
 
 class PublicController extends Controller
 {
@@ -30,7 +31,7 @@ public function reservar(Request $request)
     $boletosReservados = [];
     foreach ($request->boletos as $numero) {
         $boleto = Boleto::where('numero', $numero)
-                        ->where('rifa_id', $request->rifa_id) // <-- Filtramos por rifa
+                        ->where('rifa_id', $request->rifa_id)
                         ->where('disponible', 1)
                         ->where('vendido', 0)
                         ->first();
@@ -42,7 +43,7 @@ public function reservar(Request $request)
             ], 400);
         }
 
-        $reserva = Reserva::create([
+        Reserva::create([
             'boleto_id' => $boleto->id,
             'nombre' => $request->nombre,
             'apellido' => $request->apellido,
@@ -57,10 +58,14 @@ public function reservar(Request $request)
         $boletosReservados[] = $numero;
     }
 
+    // 📌 Elegir número aleatorio de la tabla `numeros`
+    $numeroWhatsApp = Numero::inRandomOrder()->first()->numero;
+
     return response()->json([
         'success' => true,
         'message' => 'Boletos reservados con éxito.',
-        'boletos' => $boletosReservados
+        'boletos' => $boletosReservados,
+        'numero' => $numeroWhatsApp, // 👈 lo mandamos al frontend
     ]);
 }
 

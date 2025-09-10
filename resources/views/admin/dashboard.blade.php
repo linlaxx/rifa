@@ -12,6 +12,10 @@
         <a href="{{ route('admin.listado') }}" class="btn btn-success btn-lg">
             <i class="bi bi-card-list"></i> Listado de Rifas
         </a>
+        <a href="{{ route('admin.numeros.index') }}" class="btn btn-warning btn-lg ms-2">
+    <i class="bi bi-telephone"></i> Números
+</a>
+
     </div>
 </div>
 

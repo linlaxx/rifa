@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\AdminNumeroController;
 
 // ====================
 // RUTAS DE USUARIO NORMAL
@@ -50,6 +51,13 @@ Route::get('/admin/rifas/{rifaId}/boletos', [AdminController::class, 'boletos'])
 Route::get('/admin/rifas/{rifaId}/boletos/search', [AdminController::class, 'buscarBoletos'])->name('admin.buscarBoletos');
 Route::post('/admin/boletos/{boletoId}/toggle', [AdminController::class, 'toggleBoleto'])->name('admin.toggleBoleto');
 
+// Gestión de números (CRUD completo)
+Route::prefix('admin')->middleware('auth')->group(function () {
+    Route::get('numeros', [AdminNumeroController::class, 'index'])->name('admin.numeros.index');
+    Route::post('numeros', [AdminNumeroController::class, 'store'])->name('admin.numeros.store');
+    Route::delete('numeros/{id}', [AdminNumeroController::class, 'destroy'])->name('admin.numeros.destroy');
+    Route::get('numeros/mezclar', [AdminNumeroController::class, 'mezclar'])->name('admin.numeros.mezclar');
+});
 
 // ====================
 // RUTAS DE USUARIOS LOGUEADOS
