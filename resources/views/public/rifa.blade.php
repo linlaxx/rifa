@@ -53,82 +53,69 @@
         </div>
     </div>
 
-    {{-- 📌 Botón Máquina de la suerte --}}
-<div class="text-center my-4">
-    <button class="btn btn-warning btn-lg fw-bold" data-bs-toggle="modal" data-bs-target="#modalSuerte">
-        🍀 Máquina de la suerte
-    </button>
-</div>
+    {{-- Botón Máquina de la suerte --}}
+    <div class="text-center my-4">
+        <button class="btn btn-warning btn-lg fw-bold" data-bs-toggle="modal" data-bs-target="#modalSuerte">
+            🍀 Máquina de la suerte
+        </button>
+    </div>
 
-{{-- 📌 Modal Máquina de la suerte --}}
-<div class="modal fade" id="modalSuerte" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-3 shadow">
-      <div class="modal-header">
-        <h5 class="modal-title">🍀 Máquina de la suerte</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <label for="cantidadSuerte" class="form-label">¿Cuántos boletos quieres?</label>
-        <input type="number" id="cantidadSuerte" class="form-control mb-3" min="1" value="1">
+    {{-- Modal Máquina de la suerte --}}
+    <div class="modal fade" id="modalSuerte" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow">
+          <div class="modal-header">
+            <h5 class="modal-title">🍀 Máquina de la suerte</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <label for="cantidadSuerte" class="form-label">¿Cuántos boletos quieres?</label>
+            <input type="number" id="cantidadSuerte" class="form-control mb-3" min="1" value="1">
 
-        <div id="resultadoSuerte" class="alert alert-light border d-none">
-            <p class="mb-1"><strong>Boletos seleccionados al azar:</strong></p>
-            <p id="listaSuerte" class="fw-bold"></p>
-            <p class="mb-0"><strong>Total a pagar:</strong> $<span id="totalSuerte">0.00</span></p>
+            <div id="resultadoSuerte" class="alert alert-light border d-none">
+                <p class="mb-1"><strong>Boletos seleccionados al azar:</strong></p>
+                <p id="listaSuerte" class="fw-bold"></p>
+                <p class="mb-0"><strong>Total a pagar:</strong> $<span id="totalSuerte">0.00</span></p>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button id="btnGenerarSuerte" class="btn btn-dark fw-bold">🎲 Generar</button>
+            <button id="btnPagarSuerte" class="btn btn-success fw-bold d-none">
+                <i class="bi bi-whatsapp"></i> Pagar boletos
+            </button>
+          </div>
         </div>
       </div>
-      <div class="modal-footer">
-        <button id="btnGenerarSuerte" class="btn btn-dark fw-bold">🎲 Generar</button>
-        <button id="btnPagarSuerte" class="btn btn-success fw-bold d-none">
-            <i class="bi bi-whatsapp"></i> Pagar boletos
-        </button>
+    </div>
+
+    <!-- Modal Datos de Compra -->
+    <div class="modal fade" id="modalDatosCompra" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-3 shadow">
+          <div class="modal-header">
+            <h5 class="modal-title">📝 Ingresa tus datos</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="text" id="nombreUsuario" class="form-control mb-2" placeholder="Nombre" required>
+            <input type="text" id="apellidoUsuario" class="form-control mb-2" placeholder="Apellido" required>
+            <input type="text" id="telefonoUsuario" class="form-control mb-2" placeholder="Teléfono" required>
+            <input type="text" id="estadoUsuario" class="form-control mb-2" placeholder="Estado" required>
+          </div>
+          <div class="modal-footer">
+            <button id="btnConfirmarCompra" class="btn btn-success fw-bold">Confirmar compra</button>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
 
-<!-- Modal Datos de Compra -->
-<div class="modal fade" id="modalDatosCompra" tabindex="-1" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content rounded-3 shadow">
-      <div class="modal-header">
-        <h5 class="modal-title">📝 Ingresa tus datos</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <input type="text" id="nombreUsuario" class="form-control mb-2" placeholder="Nombre" required>
-        <input type="text" id="apellidoUsuario" class="form-control mb-2" placeholder="Apellido" required>
-        <input type="text" id="telefonoUsuario" class="form-control mb-2" placeholder="Teléfono" required>
-        <input type="text" id="estadoUsuario" class="form-control mb-2" placeholder="Estado" required>
-      </div>
-      <div class="modal-footer">
-        <button id="btnConfirmarCompra" class="btn btn-success fw-bold">Confirmar compra</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
-    {{-- 📌 Selección de boletos --}}
+    {{-- Sección Boletos --}}
     <div class="mt-5">
         <h3 class="fw-bold mb-3">🎟️ Selecciona tus números</h3>
-        <div class="row g-2">
-            @foreach($rifa->boletos as $boleto)
-    <div class="col-2 col-sm-1">
-        @if($boleto->vendido || !$boleto->disponible) {{-- vendido o reservado --}}
-            <div class="p-2 text-center rounded bg-dark text-white fw-bold">
-                {{ $boleto->numero }}
-            </div>
-        @else
-            <button class="btn btn-outline-dark w-100 fw-bold select-boleto" data-numero="{{ $boleto->numero }}">
-                {{ $boleto->numero }}
-            </button>
-        @endif
-    </div>
-@endforeach
 
+        {{-- contenedor que será reemplazado por AJAX --}}
+        <div id="boletos-container">
+            @include('public.partials.boletos-list', ['boletos' => $boletos])
         </div>
 
         {{-- Resumen de selección --}}
@@ -137,7 +124,6 @@
             <p class="mb-0"><strong>Total a pagar:</strong> $<span id="totalPagar">0.00</span></p>
         </div>
 
-        {{-- Botón pagar con WhatsApp --}}
         <div class="text-center mt-3">
             <button id="btnPagar" class="btn btn-success btn-lg fw-bold">
                 <i class="bi bi-whatsapp"></i> Pagar por WhatsApp
@@ -145,22 +131,45 @@
         </div>
     </div>
 </section>
- 
 
 <script>
 document.addEventListener("DOMContentLoaded", () => {
-    const precioBoleto = {{ $rifa->precio_boleto }};
-    const disponibles = @json($rifa->boletos->where('vendido', false)->where('disponible', true)->pluck('numero'));
+    const precioBoleto = Number(@json($rifa->precio_boleto));
+    const disponibles = @json($disponibles); // ahora sí está definido
+    const rifaId = {{ $rifa->id }};
+    const storageKey = `seleccionados_rifa_${rifaId}`;
+    let seleccionados = JSON.parse(localStorage.getItem(storageKey)) || [];
 
-    let seleccionados = []; // aquí guardaremos los boletos seleccionados (manual o suerte)
+    function saveSeleccionados() {
+        localStorage.setItem(storageKey, JSON.stringify(seleccionados));
+    }
 
-    // === Selección manual ===
-    document.querySelectorAll(".select-boleto").forEach(btn => {
+    function actualizarResumen() {
+        const resumen = document.getElementById("resumen");
+        const lista = document.getElementById("listaSeleccionados");
+        const total = document.getElementById("totalPagar");
+
+        if (seleccionados.length > 0) {
+            resumen.classList.remove("d-none");
+            lista.textContent = seleccionados.join(", ");
+            total.textContent = (seleccionados.length * precioBoleto).toFixed(2);
+        } else {
+            resumen.classList.add("d-none");
+            lista.textContent = "";
+            total.textContent = "0.00";
+        }
+    }
+
+    function crearBoletoBtn(numero) {
+        const btn = document.createElement("button");
+        btn.className = "btn btn-outline-dark w-100 fw-bold select-boleto mb-1";
+        btn.dataset.numero = numero;
+        btn.textContent = numero;
+
         btn.addEventListener("click", () => {
-            const numero = btn.dataset.numero;
-            const index = seleccionados.indexOf(numero);
-            if(index > -1){
-                seleccionados.splice(index,1);
+            const idx = seleccionados.indexOf(numero);
+            if (idx > -1) {
+                seleccionados.splice(idx, 1);
                 btn.classList.remove("btn-dark");
                 btn.classList.add("btn-outline-dark");
             } else {
@@ -168,134 +177,149 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.classList.remove("btn-outline-dark");
                 btn.classList.add("btn-dark");
             }
+            saveSeleccionados();
+            actualizarResumen();
+        });
+
+        return btn;
+    }
+
+    // Inicializar botones de boletos existentes
+    document.querySelectorAll("#boletos-container .select-boleto").forEach(btn => {
+        const numero = btn.dataset.numero;
+        if (seleccionados.includes(numero)) {
+            btn.classList.remove("btn-outline-dark");
+            btn.classList.add("btn-dark");
+        }
+        btn.addEventListener("click", () => {
+            const idx = seleccionados.indexOf(numero);
+            if (idx > -1) {
+                seleccionados.splice(idx, 1);
+                btn.classList.remove("btn-dark");
+                btn.classList.add("btn-outline-dark");
+            } else {
+                seleccionados.push(numero);
+                btn.classList.remove("btn-outline-dark");
+                btn.classList.add("btn-dark");
+            }
+            saveSeleccionados();
             actualizarResumen();
         });
     });
 
-    function actualizarResumen(){
-        const resumen = document.getElementById("resumen");
-        const lista = document.getElementById("listaSeleccionados");
-        const total = document.getElementById("totalPagar");
-
-        if(seleccionados.length > 0){
-            resumen.classList.remove("d-none");
-            lista.textContent = seleccionados.join(", ");
-            total.textContent = (seleccionados.length * precioBoleto).toFixed(2);
-        } else {
-            resumen.classList.add("d-none");
-        }
-    }
-
-    // === Máquina de la suerte ===
-    const cantidadInput = document.getElementById("cantidadSuerte");
-    const resultado = document.getElementById("resultadoSuerte");
-    const listaSuerte = document.getElementById("listaSuerte");
-    const totalSuerte = document.getElementById("totalSuerte");
-    const btnGenerar = document.getElementById("btnGenerarSuerte");
-    const btnPagarSuerte = document.getElementById("btnPagarSuerte");
-
-    function elegirAleatorios(array, cantidad) {
-        let copia = [...array];
-        let resultado = [];
-        for (let i = 0; i < cantidad && copia.length > 0; i++) {
-            let index = Math.floor(Math.random() * copia.length);
-            resultado.push(copia.splice(index, 1)[0]);
-        }
-        return resultado;
-    }
-
-    btnGenerar.addEventListener("click", () => {
-        const cantidad = parseInt(cantidadInput.value);
-        if(isNaN(cantidad) || cantidad < 1){
-            alert("Ingresa un número válido");
-            return;
-        }
-        if(cantidad > disponibles.length){
-            alert("Solo hay " + disponibles.length + " boletos disponibles.");
-            return;
-        }
-        seleccionados = elegirAleatorios(disponibles, cantidad);
-        listaSuerte.textContent = seleccionados.join(", ");
-        totalSuerte.textContent = (seleccionados.length * precioBoleto).toFixed(2);
-        resultado.classList.remove("d-none");
-        btnPagarSuerte.classList.remove("d-none");
+    // Botón pagar normal
+    document.getElementById("btnPagar").addEventListener("click", () => {
+        if (seleccionados.length === 0) return alert("Selecciona al menos un boleto");
+        new bootstrap.Modal(document.getElementById("modalDatosCompra")).show();
     });
 
-    // === Abrir modal de datos al pagar ===
-    const btnPagar = document.getElementById("btnPagar");
-    btnPagar.addEventListener("click", () => {
-        if(seleccionados.length === 0){
-            alert("Selecciona al menos un boleto");
-            return;
-        }
-        const modal = new bootstrap.Modal(document.getElementById("modalDatosCompra"));
-        modal.show();
-    });
+    // Botón Generar de la máquina de la suerte
+const btnGenerarSuerte = document.getElementById("btnGenerarSuerte");
+const inputCantidad = document.getElementById("cantidadSuerte");
+const divResultado = document.getElementById("resultadoSuerte");
+const listaSuerte = document.getElementById("listaSuerte");
+const totalSuerte = document.getElementById("totalSuerte");
+
+btnGenerarSuerte.addEventListener("click", () => {
+    const cantidad = Number(inputCantidad.value);
+    if(cantidad < 1){
+        alert("Selecciona al menos un boleto");
+        return;
+    }
+
+    // Mezclar y elegir números aleatorios de los disponibles
+    const disponiblesArray = Array.from(disponibles); // 'disponibles' viene del blade
+    if(cantidad > disponiblesArray.length){
+        alert("No hay suficientes boletos disponibles");
+        return;
+    }
+
+    const seleccionSuerte = [];
+    const copiaDisponibles = [...disponiblesArray];
+
+    for(let i=0; i<cantidad; i++){
+        const idx = Math.floor(Math.random() * copiaDisponibles.length);
+        seleccionSuerte.push(copiaDisponibles[idx]);
+        copiaDisponibles.splice(idx,1); // eliminar para no repetir
+    }
+
+    // Guardar en seleccionados
+    seleccionados = seleccionSuerte;
+    saveSeleccionados();
+    actualizarResumen(); // actualiza el resumen principal
+
+    // Mostrar resultados dentro del modal
+    listaSuerte.textContent = seleccionSuerte.join(", ");
+    totalSuerte.textContent = (seleccionSuerte.length * precioBoleto).toFixed(2);
+    divResultado.classList.remove("d-none");
+
+    // Mostrar el botón de pagar
+    btnPagarSuerte.classList.remove("d-none");
+});
+
 
     btnPagarSuerte.addEventListener("click", () => {
-        if(seleccionados.length === 0){
-            alert("Selecciona al menos un boleto");
-            return;
-        }
-        const modal = new bootstrap.Modal(document.getElementById("modalDatosCompra"));
-        modal.show();
+        if (seleccionados.length === 0) return alert("Selecciona al menos un boleto");
+        new bootstrap.Modal(document.getElementById("modalDatosCompra")).show();
     });
 
-    // === Confirmar compra ===
-    document.getElementById("btnConfirmarCompra").addEventListener("click", () => {
+    // Confirmar compra
+    const btnConfirmar = document.getElementById("btnConfirmarCompra");
+    btnConfirmar.addEventListener("click", async () => {
         const nombre = document.getElementById("nombreUsuario").value.trim();
         const apellido = document.getElementById("apellidoUsuario").value.trim();
         const telefono = document.getElementById("telefonoUsuario").value.trim();
         const estado = document.getElementById("estadoUsuario").value.trim();
 
-        if(!nombre || !apellido || !telefono || !estado){
-            alert("Completa todos los campos");
-            return;
+        if (!nombre || !apellido || !telefono || !estado) return alert("Completa todos los campos");
+
+        btnConfirmar.disabled = true;
+
+        try {
+            const response = await fetch("{{ route('rifa.reservar') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}"
+                },
+                body: JSON.stringify({
+                    rifa_id: rifaId,
+                    boletos: seleccionados,
+                    nombre, apellido, telefono, estado
+                })
+            });
+
+            const text = await response.text();
+            let data;
+            try { data = JSON.parse(text); } catch { throw new Error("Respuesta inesperada: " + text.slice(0,200)); }
+
+            if (!response.ok) throw new Error(data?.message || "Error en el servidor");
+
+            if (data.success) {
+                localStorage.removeItem(storageKey);
+                alert("Boletos reservados correctamente!");
+                const mensaje = `Hola, quiero comprar los siguientes boletos de la rifa "{{ $rifa->nombre }}":\n\n` +
+                                `🎟️ Números: ${seleccionados.join(", ")}\n` +
+                                `💰 Precio por boleto: $${precioBoleto.toFixed(2)}\n` +
+                                `📊 Total: $${(precioBoleto * seleccionados.length).toFixed(2)}\n\n` +
+                                `📝 Datos:\nNombre: ${nombre}\nApellido: ${apellido}\nTeléfono: ${telefono}\nEstado: ${estado}`;
+
+                const url = `https://wa.me/${data.numero}?text=${encodeURIComponent(mensaje)}`;
+                window.open(url, "_blank");
+                location.reload();
+            } else {
+                throw new Error(data.message || "Error al reservar.");
+            }
+        } catch (err) {
+            console.error("Error al reservar:", err);
+            alert(err.message || "Error al comunicarse con el servidor.");
+        } finally {
+            btnConfirmar.disabled = false;
         }
-
-        fetch("{{ route('rifa.reservar') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({
-                rifa_id: {{ $rifa->id }},
-                boletos: seleccionados,
-                nombre: nombre,
-                apellido: apellido,
-                telefono: telefono,
-                estado: estado
-            })
-        })
-        .then(res => res.json())
-     .then(data => {
-    if(data.success){
-        alert("Boletos reservados correctamente!");
-        const mensaje = `Hola, quiero comprar los siguientes boletos de la rifa "{{ $rifa->nombre }}":\n\n` +
-                        `🎟️ Números: ${seleccionados.join(", ")}\n` +
-                        `💰 Precio por boleto: $${precioBoleto.toFixed(2)}\n` +
-                        `📊 Total: $${(precioBoleto * seleccionados.length).toFixed(2)}\n\n` +
-                        `📝 Datos:\nNombre: ${nombre}\nApellido: ${apellido}\nTeléfono: ${telefono}\nEstado: ${estado}`;
-
-        const url = `https://wa.me/${data.numero}?text=${encodeURIComponent(mensaje)}`;
-        window.open(url, "_blank");
-        location.reload();
-    } else {
-        alert(data.message || "Error al reservar.");
-    }
-})
-
-        .catch(err => {
-            console.error(err);
-            alert("Error al comunicarse con el servidor.");
-        });
     });
 
+    actualizarResumen();
 });
-
-
 </script>
-
-
 @endsection

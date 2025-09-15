@@ -11,11 +11,24 @@ use App\Models\Numero;
 
 class PublicController extends Controller
 {
-    public function showRifa($id)
+ public function showRifa($id)
 {
-    $rifa = Rifa::with('boletos')->findOrFail($id);
-    return view('public.rifa', compact('rifa'));
+    $rifa = Rifa::findOrFail($id);
+
+    // boletos paginados
+    $boletos = Boleto::where('rifa_id', $id)
+                     ->orderBy('numero')
+                     ->paginate(10000); // ajusta si quieres menos por página
+
+    // lista completa de números disponibles para la máquina de la suerte
+    $disponibles = Boleto::where('rifa_id', $id)
+                         ->where('vendido', 0)
+                         ->where('disponible', 1)
+                         ->pluck('numero');
+
+    return view('public.rifa', compact('rifa', 'boletos', 'disponibles'));
 }
+
 
 public function reservar(Request $request)
 {
