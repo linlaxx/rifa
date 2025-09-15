@@ -98,6 +98,8 @@
     <div class="container">
         <h2 class="text-center fw-bold mb-4">❓ Preguntas Frecuentes</h2>
         <div class="accordion shadow-sm" id="faqAccordion">
+
+            {{-- Pregunta 1 --}}
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingOne">
                     <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
@@ -110,6 +112,8 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Pregunta 2 --}}
             <div class="accordion-item">
                 <h2 class="accordion-header" id="headingTwo">
                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo">
@@ -122,19 +126,56 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Pregunta 3 --}}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingThree">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree">
+                        ¿Puedo seleccionar varios boletos al mismo tiempo?
+                    </button>
+                </h2>
+                <div id="collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Sí, puedes seleccionar tantos boletos como quieras, y el precio total se actualizará automáticamente.
+                    </div>
+                </div>
+            </div>
+
+            {{-- Pregunta 4 --}}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFour">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour">
+                        ¿Cómo sé si gané?
+                    </button>
+                </h2>
+                <div id="collapseFour" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Los ganadores se anuncian en la sección de resultados de nuestra página, y también recibirás una notificación por WhatsApp.
+                    </div>r
+                </div>
+            </div>
+
+            {{-- Pregunta 5 --}}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="headingFive">
+                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive">
+                        ¿Qué métodos de pago aceptan?
+                    </button>
+                </h2>
+                <div id="collapseFive" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body">
+                        Aceptamos transferencias bancarias o depositos en OXXO.
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
 
-{{-- 📌 Footer --}}
-<footer class="py-4 bg-dark text-white text-center">
-    <div class="container">
-        <p class="mb-0">© {{ date('Y') }} @Software | Páginas del Pacífico</p>
-    </div>
-</footer>
 
 {{-- 🌐 Botón Flotante de WhatsApp con Logo --}}
-<a href="https://wa.me/521234567890?text=Hola!%20Quiero%20información%20sobre%20las%20rifas" 
+<a href="https://wa.me/5216471174653?text=Hola!%20Quiero%20información%20sobre%20las%20rifas" 
    class="btn-whatsapp" target="_blank">
    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
         alt="WhatsApp" width="40" height="40">
@@ -176,6 +217,7 @@
             1024: { slidesPerView: 3 },
         },
     });
+    
 </script>
 
 {{-- 🎨 Extra CSS para mejorar diseño --}}

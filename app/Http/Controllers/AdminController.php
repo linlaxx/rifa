@@ -56,6 +56,7 @@ class AdminController extends Controller
             'fotos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'precio_boleto' => 'required|numeric|min:1',
             'total_boletos' => 'required|integer|min:1',
+            'fecha_sorteo' => 'required|date',
         ]);
 
         $paths = [];
@@ -71,6 +72,7 @@ class AdminController extends Controller
             'fotos' => json_encode($paths), // 👈 Siempre guardamos JSON
             'precio_boleto' => $request->precio_boleto,
             'total_boletos' => $request->total_boletos,
+            'fecha_sorteo' => $request->fecha_sorteo,
             'estado' => 'activa'
         ]);
 
@@ -121,6 +123,7 @@ for ($i = 1; $i <= $rifa->total_boletos; $i++) {
             'fotos.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             'precio_boleto' => 'required|numeric|min:0',
             'total_boletos' => 'required|integer|min:1',
+            'fecha_sorteo' => 'required|date',
             'estado' => 'required|in:activa,finalizada',
         ]);
 
@@ -128,6 +131,7 @@ for ($i = 1; $i <= $rifa->total_boletos; $i++) {
         $rifa->descripcion = $request->descripcion;
         $rifa->precio_boleto = $request->precio_boleto;
         $rifa->estado = $request->estado;
+        $rifa->fecha_sorteo = $request->fecha_sorteo; //
 
         // 📌 Manejo de fotos (siempre JSON → array)
         $fotosActuales = is_array($rifa->fotos) ? $rifa->fotos : json_decode($rifa->fotos, true) ?? [];

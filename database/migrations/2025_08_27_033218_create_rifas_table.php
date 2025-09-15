@@ -20,6 +20,8 @@ return new class extends Migration
         $table->integer('total_boletos');
         $table->enum('estado', ['activa', 'finalizada'])->default('activa');
         $table->timestamps();
+        $table->dateTime('fecha_sorteo');
+
     });
 }
 

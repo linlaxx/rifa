@@ -16,6 +16,44 @@ class PublicController extends Controller
     $rifa = Rifa::with('boletos')->findOrFail($id);
     return view('public.rifa', compact('rifa'));
 }
+// Traer todos los boletos disponibles de una rifa
+public function boletosDisponibles($id)
+{
+    $rifa = Rifa::with('boletos')->findOrFail($id);
+
+    $boletos = $rifa->boletos->map(function($b){
+        return [
+            'numero' => $b->numero,
+            'disponible' => $b->disponible,
+            'vendido' => $b->vendido,
+        ];
+    });
+
+    return response()->json([
+        'boletos' => $boletos
+    ]);
+}
+
+public function boletosPorPagina(Request $request, $id)
+{
+    $rifa = Rifa::with('boletos')->findOrFail($id);
+
+    $perPage = $request->query('perPage', 10,000); // boletos por página
+    $page = $request->query('page', 1);
+
+    $boletos = $rifa->boletos()->orderBy('numero')->get(); // traer solo los boletos de esta rifa
+    $total = $boletos->count();
+    $totalPaginas = ceil($total / $perPage);
+
+    $paginaBoletos = $boletos->slice(($page - 1) * $perPage, $perPage)->values();
+
+    return response()->json([
+        'boletos' => $paginaBoletos,
+        'totalPaginas' => $totalPaginas,
+        'currentPage' => $page,
+        'totalBoletos' => $total,
+    ]);
+}
 
 public function reservar(Request $request)
 {

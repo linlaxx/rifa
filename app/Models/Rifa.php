@@ -15,7 +15,8 @@ class Rifa extends Model
         'fotos', 
         'precio_boleto', 
         'total_boletos', 
-        'estado'
+        'estado',
+        'fecha_sorteo'
     ];
 
     // 👇 Aquí agregamos el cast para fotos

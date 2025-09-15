@@ -1,13 +1,12 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\AdminNumeroController;
 
 // ====================
-// RUTAS DE USUARIO NORMAL
+// RUTAS PÚBLICAS
 // ====================
 
 // Página principal (con carrusel y secciones)
@@ -15,6 +14,12 @@ Route::get('/', [PublicController::class, 'index'])->name('public.index');
 
 // Vista individual de una rifa
 Route::get('/rifa/{id}', [PublicController::class, 'showRifa'])->name('public.rifa');
+
+// Ruta AJAX para traer boletos por página (público)
+Route::get('/rifa/{id}/boletos', [PublicController::class, 'boletosPorPagina'])->name('public.rifa.boletos');
+
+// Ruta AJAX para traer boletos disponibles
+Route::get('/rifa/{id}/boletos-disponibles', [PublicController::class, 'boletosDisponibles']);
 
 // Vista métodos de pago
 Route::get('/metodos-pago', [PublicController::class, 'metodosPago'])->name('public.metodosPago');
@@ -24,53 +29,34 @@ Route::post('/rifa/reservar', [PublicController::class, 'reservar'])->name('rifa
 
 
 // ====================
-// RUTAS DE ADMIN
+// RUTAS ADMIN (requieren login + admin)
 // ====================
 
-// Ruta del welcome para el admin
-Route::get('/admin', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
+    Route::get('/', [AdminController::class, 'index'])->name('admin.dashboard');
 
-// Vista del formulario para crear rifa
-Route::get('/admin/crearSorteo', [AdminController::class, 'vista'])->name('admin.crearSorteo');
-// Procesar el formulario para crear rifa
-Route::post('/admin/crearSorteo', [AdminController::class, 'guardar'])->name('admin.guardar');
-
-
-// Listado de rifas
-Route::get('/admin/listado', [AdminController::class, 'listado'])->name('admin.listado');
-
-// Editar rifa
-Route::get('/admin/editar/{id}', [AdminController::class, 'VistaEditar'])->name('admin.VistaEditar');
-Route::put('/admin/editar/{id}', [AdminController::class, 'editar'])->name('admin.editar');
-
-// Eliminar rifa
-Route::delete('/admin/rifas/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
-
-// Boletos
-Route::get('/admin/rifas/{rifaId}/boletos', [AdminController::class, 'boletos'])->name('admin.boletos');
-Route::get('/admin/rifas/{rifaId}/boletos/search', [AdminController::class, 'buscarBoletos'])->name('admin.buscarBoletos');
-Route::post('/admin/boletos/{boletoId}/toggle', [AdminController::class, 'toggleBoleto'])->name('admin.toggleBoleto');
-
-// Gestión de números (CRUD completo)
-Route::prefix('admin')->middleware('auth')->group(function () {
+    // Gestión de números
     Route::get('numeros', [AdminNumeroController::class, 'index'])->name('admin.numeros.index');
     Route::post('numeros', [AdminNumeroController::class, 'store'])->name('admin.numeros.store');
     Route::delete('numeros/{id}', [AdminNumeroController::class, 'destroy'])->name('admin.numeros.destroy');
     Route::get('numeros/mezclar', [AdminNumeroController::class, 'mezclar'])->name('admin.numeros.mezclar');
+
+    // Rifas
+    Route::get('crear-sorteo', [AdminController::class, 'vista'])->name('admin.crearSorteo');
+    Route::post('crear-sorteo', [AdminController::class, 'guardar'])->name('admin.guardar');
+    Route::get('listado', [AdminController::class, 'listado'])->name('admin.listado');
+    Route::get('editar/{id}', [AdminController::class, 'VistaEditar'])->name('admin.VistaEditar');
+    Route::put('editar/{id}', [AdminController::class, 'editar'])->name('admin.editar');
+    Route::delete('rifas/{id}', [AdminController::class, 'destroy'])->name('admin.destroy');
+
+    // Boletos
+    Route::get('rifas/{rifaId}/boletos', [AdminController::class, 'boletos'])->name('admin.boletos');
+    Route::get('rifas/{rifaId}/boletos/search', [AdminController::class, 'buscarBoletos'])->name('admin.buscarBoletos');
+    Route::post('boletos/{boletoId}/toggle', [AdminController::class, 'toggleBoleto'])->name('admin.toggleBoleto');
 });
 
 // ====================
-// RUTAS DE USUARIOS LOGUEADOS
+// AUTENTICACIÓN (solo login/logout)
 // ====================
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
